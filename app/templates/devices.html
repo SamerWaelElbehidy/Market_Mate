@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="animate-in" style="--delay: 0.1s">
+  <h2 class="page-title">📱 <span>Device Management</span></h2>
+</div>
+
+<div class="bulk-actions animate-in" style="--delay: 0.2s">
+  <a href="{{ url_for('admin_device_controller.download_devices_csv') }}" class="button"><span class="button-content">⬇️ Download All Data (CSV)</span></a>
+  <a href="{{ url_for('admin_device_controller.delete_all_devices') }}" class="button" onclick="return confirm('Are you sure you want to delete ALL devices? This will also delete all associated images and analysis results. This action cannot be undone!')"><span class="button-content">🗑️ Delete All Devices</span></a>
+</div>
+
+<div class="table-container animate-in" style="--delay: 0.3s">
+  <table>
+    <thead>
+      <tr>
+        <th>Device ID</th>
+        <th>Type</th>
+        <th>Model</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for device in devices %}
+      <tr class="animate-in" style="--delay: {{ loop.index0 * 0.1 + 0.4 }}s">
+        <td>{{ device.device_ID }}</td>
+        <td>{{ device.device_type }}</td>
+        <td>{{ device.device_model }}</td>
+        <td>{{ device.timestamp }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.bulk-actions {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  display: inline-block;
+  margin: 2px;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+}
+</style>
+{% endblock %}

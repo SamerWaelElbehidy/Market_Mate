@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<h2 class="page-title">📈 <span>Dashboard Overview</span></h2>
+<div class="stats-grid">
+  <div class="row">
+    <a href="/admins" class="card-link">
+      <div class="card card-animate" style="--delay: 0.1s">
+        <div class="card-label">Total Admins</div>
+        <div class="card-value">{{ counts.admins }}</div>
+      </div>
+    </a>
+    <a href="/devices/" class="card-link">
+      <div class="card card-animate" style="--delay: 0.2s">
+        <div class="card-label">Total Devices</div>
+        <div class="card-value">{{ counts.devices }}</div>
+      </div>
+    </a>
+    <a href="/images/" class="card-link">
+      <div class="card card-animate" style="--delay: 0.3s">
+        <div class="card-label">Total Images</div>
+        <div class="card-value">{{ counts.images }}</div>
+      </div>
+    </a>
+  </div>
+  
+  <div class="row">
+    <a href="/analysis/" class="card-link">
+      <div class="card card-animate" style="--delay: 0.4s">
+        <div class="card-label">Fresh Items</div>
+        <div class="card-value">{{ quality_counts.fresh }}</div>
+      </div>
+    </a>
+    <a href="/analysis/" class="card-link">
+      <div class="card card-animate" style="--delay: 0.5s">
+        <div class="card-label">Rotten Items</div>
+        <div class="card-value">{{ quality_counts.rotten }}</div>
+      </div>
+    </a>
+    <a href="/analysis/" class="card-link">
+      <div class="card card-animate" style="--delay: 0.6s">
+        <div class="card-label">Other Items</div>
+        <div class="card-value">{{ quality_counts.other }}</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="row">
+    <a href="/feedbacks/" class="card-link full-width">
+      <div class="card card-animate full-width" style="--delay: 0.7s">
+        <div class="card-label">Total Feedbacks</div>
+        <div class="card-value">{{ counts.feedbacks }}</div>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}

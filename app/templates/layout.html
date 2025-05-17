@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarketMate Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <script>
+    // Initialize sidebar state immediately
+    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+      document.documentElement.style.setProperty('--initial-sidebar-state', 'collapsed');
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('collapsed');
+      localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+    }
+  </script>
+  <style>
+    :root {
+      --primary: #3B82F6;
+      --secondary: #10B981;
+      --accent: #8B5CF6;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .page-title span {
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar {
+      visibility: hidden;
+    }
+    .sidebar.init {
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar animate-in" id="sidebar" style="--delay: 0s">
+    <script>
+      // Initialize sidebar as soon as the element exists
+      (function() {
+        const sidebar = document.getElementById('sidebar');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          sidebar.classList.add('collapsed');
+        }
+        sidebar.classList.add('init');
+
+        // Update tooltip positions
+        function updateTooltipPositions() {
+          const sidebarLinks = document.querySelectorAll('.sidebar li a');
+          sidebarLinks.forEach(link => {
+            const rect = link.getBoundingClientRect();
+            link.style.setProperty('--tooltip-y', `${rect.top}px`);
+          });
+        }
+
+        // Update positions initially and on scroll
+        updateTooltipPositions();
+        window.addEventListener('scroll', updateTooltipPositions);
+        window.addEventListener('resize', updateTooltipPositions);
+      })();
+    </script>
+    <div class="sidebar-header">
+      <div class="logo-title">
+        <img src="{{ url_for('static', filename='marketmate.png') }}" alt="MarketMate Logo" class="logo">
+        <h2>MarketMate</h2>
+      </div>
+      <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="ri-arrow-left-s-line"></i>
+      </button>
+    </div>
+    <ul>
+      {% set active_page = request.path.strip('/').split('/')[0] %}
+      <li class="animate-in" style="--delay: 0.1s"><a href="/" class="{{ 'active' if active_page == '' else '' }}" data-tooltip="Dashboard"><i class="ri-home-line"></i><span>Dashboard</span></a></li>
+      <li class="animate-in" style="--delay: 0.2s"><a href="/admins" class="{{ 'active' if active_page == 'admins' else '' }}" data-tooltip="Admins"><i class="ri-user-line"></i><span>Admins</span></a></li>
+      <li class="animate-in" style="--delay: 0.3s"><a href="/devices" class="{{ 'active' if active_page == 'devices' else '' }}" data-tooltip="Devices"><i class="ri-smartphone-line"></i><span>Devices</span></a></li>
+      <li class="animate-in" style="--delay: 0.4s"><a href="/images" class="{{ 'active' if active_page == 'images' else '' }}" data-tooltip="Images"><i class="ri-image-line"></i><span>Images</span></a></li>
+      <li class="animate-in" style="--delay: 0.5s"><a href="/analysis" class="{{ 'active' if active_page == 'analysis' else '' }}" data-tooltip="Analysis"><i class="ri-bar-chart-line"></i><span>Results</span></a></li>
+      <li class="animate-in" style="--delay: 0.6s"><a href="/insights" class="{{ 'active' if active_page == 'insights' else '' }}" data-tooltip="Insights"><i class="ri-line-chart-line"></i><span>Insights</span></a></li>
+      <li class="animate-in" style="--delay: 0.7s"><a href="/feedbacks" class="{{ 'active' if active_page == 'feedbacks' else '' }}" data-tooltip="Feedbacks"><i class="ri-message-3-line"></i><span>Feedbacks</span></a></li>
+    </ul>
+    <div class="logout-section">
+      <ul>
+        <li class="animate-in" style="--delay: 0.8s"><a href="/logout" data-tooltip="Logout"><i class="ri-logout-box-line"></i><span>Logout</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="main-content animate-in" style="--delay: 0.1s">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

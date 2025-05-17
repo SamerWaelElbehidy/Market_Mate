@@ -1,0 +1,73 @@
+/* Dashboard Grid Layout */
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Card Styles */
+.card-link {
+  display: block;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-animate {
+  animation: slideInCard 0.5s ease-out;
+  animation-delay: var(--delay);
+  animation-fill-mode: forwards;
+}
+
+@keyframes slideInCard {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  background-color: #f8f9fa;
+}
+
+.full-width {
+  width: 100%;
+  text-align: center;
+}
+
+.card-label {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.card-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+  opacity: 1;
+} 

@@ -1,0 +1,526 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="animate-in" style="--delay: 0.1s">
+  <h2 class="page-title">📈 <span>Insights & Analytics</span></h2>
+</div>
+
+<div class="insights-grid">
+  <!-- Quality Distribution Card -->
+  <div class="insight-card animate-in" style="--delay: 0.2s">
+    <h3><i class="fas fa-leaf"></i> Quality Distribution</h3>
+    <div class="chart-container">
+      <canvas id="qualityChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>Total Predictions: <b>{{ total_predictions }}</b></span>
+    </div>
+  </div>
+
+  <!-- Top Items Card -->
+  <div class="insight-card animate-in" style="--delay: 0.3s">
+    <h3><i class="fas fa-crown"></i> Most Common Items</h3>
+    <div class="chart-container">
+      <canvas id="topItemsChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>Top 5 Items</span>
+    </div>
+  </div>
+
+  <!-- Daily Activity Card -->
+  <div class="insight-card animate-in" style="--delay: 0.4s">
+    <h3><i class="fas fa-calendar-day"></i> Daily Activity</h3>
+    <div class="chart-container">
+      <canvas id="activityChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>Last 7 Days</span>
+    </div>
+  </div>
+
+  <!-- Confidence Levels Card -->
+  <div class="insight-card animate-in" style="--delay: 0.5s">
+    <h3><i class="fas fa-bolt"></i> Prediction Confidence Levels</h3>
+    <div class="chart-container">
+      <canvas id="confidenceChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>Average Confidence: <b class="highlight">{{ "%.1f"|format(avg_confidence) }}%</b></span>
+    </div>
+  </div>
+
+  <!-- Model Performance Card -->
+  <div class="insight-card wide animate-in" style="--delay: 0.6s">
+    <h3><i class="fas fa-trophy"></i> Model Performance by Category</h3>
+    <div class="chart-container">
+      <canvas id="modelPerformanceChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>Category-wise accuracy and confidence</span>
+    </div>
+  </div>
+
+  <!-- Time Distribution Card -->
+  <div class="insight-card wide animate-in" style="--delay: 0.7s">
+    <h3><i class="fas fa-clock"></i> Usage Time Distribution</h3>
+    <div class="chart-container">
+      <canvas id="timeDistributionChart"></canvas>
+    </div>
+    <div class="card-footer">
+      <span>24-hour activity pattern</span>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #3B82F6;
+  --secondary: #10B981;
+  --accent: #8B5CF6;
+  --danger: #EF4444;
+  --bg: #f8fafc;
+  --card-bg: #fff;
+  --shadow: 0 8px 24px rgba(16, 185, 129, 0.08);
+}
+
+body {
+  background: var(--bg);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.insight-card {
+  background: var(--card-bg);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+  border: 1px solid #e5e7eb;
+  height: fit-content;
+}
+
+.insight-card:hover {
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.10);
+}
+
+.insight-card.wide {
+  grid-column: span 2;
+}
+
+.insight-card h3 {
+  margin: 0 0 1.2rem 0;
+  color: #2d3748;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.card-footer {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.card-footer .highlight {
+  color: var(--secondary);
+  font-weight: 700;
+}
+.card-footer .highlight.error {
+  color: var(--danger);
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin: 0.5rem 0;
+}
+
+.wide .chart-container {
+  height: 400px;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  transition: filter 0.3s;
+  filter: drop-shadow(0 2px 8px rgba(59,130,246,0.07));
+}
+
+@media (max-width: 900px) {
+  .insights-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding: 1rem 0.5rem;
+  }
+  .insight-card.wide {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .insight-card {
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
+  .insights-grid {
+    padding: 0.5rem;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Chart.js global defaults for a modern look
+Chart.defaults.font.family = "'Inter', 'Segoe UI', Arial, sans-serif";
+Chart.defaults.plugins.tooltip.backgroundColor = "#fff";
+Chart.defaults.plugins.tooltip.titleColor = "#3B82F6";
+Chart.defaults.plugins.tooltip.bodyColor = "#374151";
+Chart.defaults.plugins.tooltip.borderColor = "#e5e7eb";
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
+Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.position = 'nearest';
+Chart.defaults.plugins.tooltip.caretSize = 0;
+Chart.defaults.plugins.tooltip.displayColors = false;
+Chart.defaults.hover.intersect = true;
+Chart.defaults.interaction.mode = 'nearest';
+
+const commonOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        padding: 20,
+        usePointStyle: true,
+        font: {
+          size: 13,
+          weight: '600'
+        }
+      }
+    }
+  },
+  animation: {
+    duration: 900,
+    easing: 'easeOutQuart'
+  }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Quality Distribution Chart
+  new Chart(document.getElementById('qualityChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Fresh', 'Rotten', 'Other'],
+      datasets: [{
+        data: {{ quality_distribution|tojson }},
+        backgroundColor: [
+          '#10B981',  // Fresh - Green
+          '#EF4444',  // Rotten - Red
+          '#3B82F6'   // Other - Blue
+        ],
+        borderWidth: 0,
+        borderColor: "#ffffff",
+        hoverOffset: 15  // Makes segments pop out on hover
+      }]
+    },
+    options: {
+      ...commonOptions,
+      cutout: '65%',
+      radius: '90%',
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      }
+    }
+  });
+
+  // Top Items Chart
+  new Chart(document.getElementById('topItemsChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ top_items_labels|tojson }},
+      datasets: [{
+        label: 'Count',
+        data: {{ top_items_data|tojson }},
+        backgroundColor: [
+          "#3B82F6",  // Primary blue
+          "#60A5FA",  // Lighter blue
+          "#10B981",  // Green
+          "#34D399",  // Lighter green
+          "#818CF8"   // Indigo
+        ],
+        borderRadius: 10,
+        barPercentage: 0.95,
+        categoryPercentage: 0.95,
+        borderWidth: 0,
+        hoverBackgroundColor: [
+          "#60A5FA",  // Lighter version of primary blue
+          "#93C5FD",  // Lighter version of lighter blue
+          "#34D399",  // Lighter version of green
+          "#6EE7B7",  // Lighter version of lighter green
+          "#A5B4FC"   // Lighter version of indigo
+        ],
+        hoverBorderWidth: 2,
+        hoverBorderColor: 'rgba(255, 255, 255, 0.5)'
+      }]
+    },
+    options: {
+      ...commonOptions,
+      indexAxis: 'y',
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+      animation: {
+        duration: 400,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            boxWidth: 0,  // This removes the color box
+            padding: 10,
+            font: {
+              size: 13,
+              weight: '600'
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Daily Activity Chart
+  new Chart(document.getElementById('activityChart'), {
+    type: 'line',
+    data: {
+      labels: {{ daily_labels|tojson }},
+      datasets: [{
+        label: 'Predictions',
+        data: {{ daily_activity|tojson }},
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.13)',
+        tension: 0.3,
+        fill: true,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 8,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#10B981",
+        pointBorderWidth: 2,
+        pointHoverBackgroundColor: "#10B981",
+        pointHoverBorderColor: "#fff",
+        pointHoverBorderWidth: 3
+      }]
+    },
+    options: {
+      ...commonOptions,
+      hover: {
+        mode: 'nearest',
+        intersect: true,
+        animationDuration: 200
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            boxWidth: 0,  // This removes the color box
+            padding: 10,
+            font: {
+              size: 13,
+              weight: '600'
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Confidence Levels Chart
+  new Chart(document.getElementById('confidenceChart'), {
+    type: 'bar',
+    data: {
+      labels: ['90-100%', '80-90%', '70-80%', '60-70%', '<60%'],
+      datasets: [{
+        label: 'Predictions',
+        data: {{ confidence_distribution|tojson }},
+        backgroundColor: [
+          "#3B82F6",  // Primary blue
+          "#60A5FA",  // Lighter blue
+          "#818CF8",  // Light blue
+          "#A5B4FC",  // Very light blue
+          "#10B981"   // Green instead of yellow
+        ],
+        borderRadius: 8,
+        borderWidth: 0,
+        barThickness: 40,
+        maxBarThickness: 45,
+        hoverBackgroundColor: [
+          "#60A5FA",  // Lighter version
+          "#93C5FD",
+          "#A5B4FC",
+          "#C7D2FE",
+          "#34D399"
+        ],
+        hoverBorderWidth: 2,
+        hoverBorderColor: 'rgba(255, 255, 255, 0.5)'
+      }]
+    },
+    options: {
+      ...commonOptions,
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+      animation: {
+        duration: 400,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            boxWidth: 0,  // This removes the color box
+            padding: 10,
+            font: {
+              size: 13,
+              weight: '600'
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Model Performance Chart
+  new Chart(document.getElementById('modelPerformanceChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ categories|tojson }},
+      datasets: [{
+        label: 'Confidence',
+        data: {{ confidence_data|tojson }},
+        backgroundColor: '#3B82F6',
+        borderRadius: 8,
+        barPercentage: 0.95,
+        categoryPercentage: 0.95,
+        borderWidth: 0,
+        hoverBackgroundColor: '#60A5FA',
+        hoverBorderWidth: 2,
+        hoverBorderColor: 'rgba(255, 255, 255, 0.5)'
+      }]
+    },
+    options: {
+      ...commonOptions,
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            boxWidth: 0,  // This removes the color box
+            padding: 10,
+            font: {
+              size: 13,
+              weight: '600'
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Time Distribution Chart
+  new Chart(document.getElementById('timeDistributionChart'), {
+    type: 'line',
+    data: {
+      labels: {{ hours|tojson }},
+      datasets: [{
+        label: 'Activity',
+        data: {{ hourly_activity|tojson }},
+        borderColor: '#8B5CF6',
+        backgroundColor: 'rgba(139, 92, 246, 0.13)',
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 8,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#8B5CF6",
+        pointBorderWidth: 2,
+        pointHoverBackgroundColor: "#8B5CF6",
+        pointHoverBorderColor: "#fff",
+        pointHoverBorderWidth: 3
+      }]
+    },
+    options: {
+      ...commonOptions,
+      hover: {
+        mode: 'nearest',
+        intersect: true,
+        animationDuration: 200
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            boxWidth: 0,  // This removes the color box
+            padding: 10,
+            font: {
+              size: 13,
+              weight: '600'
+            }
+          }
+        }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

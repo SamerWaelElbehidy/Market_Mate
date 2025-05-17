@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="animate-in" style="--delay: 0.1s">
+  <h2 class="page-title">📊 <span>Results</span></h2>
+</div>
+
+<div class="bulk-actions animate-in" style="--delay: 0.2s">
+  <a href="{{ url_for('admin_analysis_controller.download_analysis_csv') }}" class="button"><span class="button-content">⬇️ Download All The Results (CSV)</span></a>
+</div>
+
+<div class="animate-in" style="--delay: 0.3s">
+  <table>
+    <thead>
+      <tr>
+        <th>Image ID</th>
+        <th>Message</th>
+        <th>Confidence Level</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+      <tr class="animate-in" style="--delay: {{ loop.index0 * 0.1 + 0.4 }}s">
+        <td>{{ result.image_ID }}</td>
+        <td>{{ result.predicted_class }}</td>
+        <td class="confidence-cell number-animate">{{ "%.2f"|format(result.confidence_level * 100) }}%</td>
+        <td>
+          {% if result.error_flag %}
+          <div class="status-error">⚠️ Error</div>
+          {% elif result.predicted_class == "Other Item" %}
+          <div class="status-undefined">❓ Undefined</div>
+          {% elif 'Fresh' in result.predicted_class %}
+          <div class="status-excellent">✅ Fresh</div>
+          {% elif 'Rotten' in result.predicted_class %}
+          <div class="status-low">❌ Rotten</div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.bulk-actions {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  display: inline-block;
+  margin: 2px;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+th:nth-child(3), td:nth-child(3) {
+  font-family: monospace;
+  text-align: center;
+}
+</style>
+{% endblock %}

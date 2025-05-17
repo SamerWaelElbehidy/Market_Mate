@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="animate-in fade-in" style="--delay: 0.1s">
+  <h2 class="page-title">✏️ <span>Edit Admin</span></h2>
+</div>
+<div class="form-container">
+  <form method="POST">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="{{ admin.email }}" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" value="{{ admin.password }}" required>
+    </div>
+    <button type="submit">💾 Save Changes</button>
+  </form>
+</div>
+{% endblock %}

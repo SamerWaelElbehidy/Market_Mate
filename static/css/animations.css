@@ -1,0 +1,186 @@
+/* Animations */
+@keyframes popIn {
+  0% { transform: scale(0.96) translateY(30px); opacity: 0; }
+  60% { transform: scale(1.04) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes numberCount {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Common Animation Classes */
+.animate-in {
+  animation: popIn 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  animation-delay: var(--delay, 0s);
+  animation-fill-mode: forwards;
+  opacity: 0;
+  transform: scale(0.96) translateY(30px);
+}
+
+.fade-in {
+  animation: popIn 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  animation-fill-mode: forwards;
+  opacity: 0;
+  transform: scale(0.96) translateY(30px);
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.number-animate {
+  animation: numberCount 0.5s ease-out forwards;
+  animation-fill-mode: both;
+}
+
+/* Dashboard Card Animations */
+.card-animate {
+  animation: popIn 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  animation-delay: var(--delay, 0s);
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+  opacity: 0;
+  transform: scale(0.96) translateY(30px);
+}
+
+/* Common Styles with Animations */
+.page-title {
+  animation: popIn 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  animation-fill-mode: forwards;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: scale(0.96) translateY(30px);
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateX(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background-color: #f8f9fa;
+}
+
+.button {
+  display: inline-block;
+  margin: 2px;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Table Animations */
+table {
+  width: 100%;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  animation: popIn 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  animation-fill-mode: forwards;
+  opacity: 0;
+  transform: scale(0.96) translateY(30px);
+}
+
+tr {
+  transition: background-color 0.3s ease;
+}
+
+tr:hover {
+  background-color: #f8fafc;
+  transform: scale(1.01);
+  transition: all 0.2s ease;
+}
+
+/* Status Indicators */
+.status-excellent, .status-low, .status-error, .status-undefined {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.status-excellent {
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.status-low {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.status-error {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-undefined {
+  background-color: #f3f4f6;
+  color: #6B7280;
+}
+
+.status-excellent:hover, .status-low:hover, .status-error:hover, .status-undefined:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+} 

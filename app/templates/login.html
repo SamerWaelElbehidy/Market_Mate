@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | MarketMate Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    /* Override the global logo size specifically for login page */
+    .login-box .logo {
+      width: 100px !important;
+      height: 100px !important;
+      max-width: 100px !important;
+      max-height: 100px !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo-title">
+        <img src="{{ url_for('static', filename='marketmate.png') }}" alt="MarketMate Logo" class="logo">
+        <h2>MarketMate Admin</h2>
+      </div>
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <i class="ri-mail-line"></i>
+          <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+          <i class="ri-lock-line"></i>
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8fafc;
+    }
+
+    .login-box {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 360px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      z-index: 1;
+    }
+
+    .input-group input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      margin-bottom: 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      height: 45px;
+    }
+
+    .logo-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .logo-title h2 {
+      color: #3d8359;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    form {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 1rem;
+      height: 45px;
+      background-color: #3d8359;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      padding: 0 1rem;
+    }
+
+    button:hover {
+      background-color: #326b49;
+    }
+  </style>
+</body>
+</html>

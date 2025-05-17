@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="animate-in" style="--delay: 0.1s">
+  <h2 class="page-title">👤 <span>Manage Admins</span></h2>
+</div>
+
+<div class="form-container animate-in" style="--delay: 0.2s">
+  <form method="POST" action="/admins/add" class="add-admin-form">
+    <div class="form-inputs">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+    </div>
+    <button type="submit" class="button">Add Admin</button>
+  </form>
+</div>
+
+<div class="table-container animate-in" style="--delay: 0.3s">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for admin in admins %}
+      <tr class="animate-in" style="--delay: {{ loop.index0 * 0.1 + 0.4 }}s">
+        <td>{{ admin.admin_ID }}</td>
+        <td>{{ admin.email }}</td>
+        <td>•••••••••</td>
+        <td>
+          <a href="/admins/{{ admin.admin_ID }}/edit" class="button"><span class="button-content">✏️ Edit</span></a>
+          <a href="/admins/{{ admin.admin_ID }}/delete" class="button" onclick="return confirm('Are you sure you want to delete this admin?')"><span class="button-content">🗑️ Delete</span></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.form-container {
+  width: 100%;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.add-admin-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+}
+
+.form-inputs {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.form-inputs input {
+  margin-bottom: 0;
+}
+
+button {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.button {
+  display: inline-block;
+  margin: 2px;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+}
+</style>
+{% endblock %}
