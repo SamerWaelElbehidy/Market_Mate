@@ -41,5 +41,6 @@ def upload_image():
     image_metadata, prediction_result = save_image(file, device_ID)
     return jsonify({
         "image_ID": image_metadata['image_ID'],
-        "prediction": prediction_result['predicted_class']
+        "prediction": prediction_result['predicted_class'],
+        "audio_file": prediction_result.get('audio_file')
     })

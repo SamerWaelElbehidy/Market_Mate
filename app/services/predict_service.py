@@ -44,7 +44,7 @@ class PredictService:
 
     def predict_local(self, image_path):
         if not os.path.exists(image_path):
-            return "Error", 0, True
+            return "Error", 0, True, None
 
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
@@ -62,24 +62,26 @@ class PredictService:
             confidence = max_prob.item()
 
         predicted_class = self.target_classes[predicted.item()]
-
+        audio_file = None
         # Play audio based on prediction
         try:
             if confidence < 0.6:
-                pygame.mixer.music.load("audio/error.mp3")
+                audio_file = "static/audio/error.mp3"
+                pygame.mixer.music.load(audio_file)
                 predicted_class = "Other Item"
             else:
-                audio_path = f"audio/{predicted_class}.mp3"
-                pygame.mixer.music.load(audio_path)
+                audio_file = f"static/audio/{predicted_class}.mp3"
+                pygame.mixer.music.load(audio_file)
         except Exception as e:
             print(f"Error loading audio: {e}")
-            pygame.mixer.music.load("audio/Error.mp3")
+            audio_file = "static/audio/Error.mp3"
+            pygame.mixer.music.load(audio_file)
 
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
 
-        return predicted_class, confidence, False
+        return predicted_class, confidence, False, audio_file
 
     def predict_gemini(self, image_path):
         try:
@@ -97,17 +99,28 @@ class PredictService:
             arabic_only = re.findall(r'[\u0600-\u06FF\s،؟]+', caption)
             arabic_text = ''.join(arabic_only).strip()
 
-            # Convert to speech
+            # Convert to speech and save to file
+            from datetime import datetime
             mp3_fp = io.BytesIO()
             tts = gTTS(text=arabic_text, lang='ar')
             tts.write_to_fp(mp3_fp)
             mp3_fp.seek(0)
+            # Save to a unique file
+            audio_filename = f"static/audio/gemini_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.mp3"
+            with open(audio_filename, 'wb') as f:
+                f.write(mp3_fp.read())
 
-            # Play the Arabic speech
-            pygame.mixer.music.load(mp3_fp, 'mp3')
-            pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy():
-                pygame.time.Clock().tick(10)
+            import threading, time
+            def remove_file_later(path):
+                def _remove():
+                    time.sleep(10)
+                    try:
+                        if os.path.exists(path):
+                            os.remove(path)
+                    except Exception as e:
+                        print(f"Error deleting audio file: {e}")
+                threading.Thread(target=_remove, daemon=True).start()
+            remove_file_later(audio_filename)
 
             # Map Arabic description to our categories
             arabic_text_lower = arabic_text.lower()
@@ -150,7 +163,7 @@ class PredictService:
             elif has_bellpepper:
                 item = "Bellpepper"
             else:
-                return "Other Item", 0.7, False
+                return "Other Item", 0.7, False, audio_filename
 
             # Combine freshness with item
             if is_fresh:
@@ -158,13 +171,13 @@ class PredictService:
             elif is_rotten:
                 predicted_class = f"Rotten{item}"
             else:
-                return "Other Item", 0.7, False
+                return "Other Item", 0.7, False, audio_filename
 
             # Validate the predicted class
             if predicted_class in self.target_classes:
-                return predicted_class, 0.9, False
+                return predicted_class, 0.9, False, audio_filename
             else:
-                return "Other Item", 0.7, False
+                return "Other Item", 0.7, False, audio_filename
 
         except Exception as e:
             print(f"Gemini API error: {e}")
@@ -172,10 +185,9 @@ class PredictService:
 
     def predict(self, image_path):
         if not os.path.exists(image_path):
-            return "Error", 0, True
+            return "Error", 0, True, None
 
         if self.has_internet():
-            # Try Gemini API first
             result = self.predict_gemini(image_path)
             if result is not None:
                 return result

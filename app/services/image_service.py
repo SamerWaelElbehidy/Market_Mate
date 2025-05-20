@@ -15,7 +15,7 @@ def save_image(file, device_ID):
     file_path = os.path.join(upload_folder, f"{image_ID}_{file.filename}")
     file.save(file_path)
 
-    predicted_class, confidence, error_flag = predict_image(file_path)
+    predicted_class, confidence, error_flag, audio_file = predict_image(file_path)
 
     # Use the exact predicted class as the folder name
     if predicted_class == 'Other Item':
@@ -53,13 +53,14 @@ def save_image(file, device_ID):
     }, {
         "predicted_class": predicted_class,
         "confidence_level": confidence,
-        "error_flag": error_flag
+        "error_flag": error_flag,
+        "audio_file": audio_file
     }
 
 def predict_image(image_path):
     try:
-        predicted_class, confidence, error_flag = predict_service.predict(image_path)
-        return predicted_class, confidence, error_flag
+        predicted_class, confidence, error_flag, audio_file = predict_service.predict(image_path)
+        return predicted_class, confidence, error_flag, audio_file
     except Exception as e:
         print(f"Prediction error: {str(e)}")
-        return "Error", 0, True
+        return "Error", 0, True, None
